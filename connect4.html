@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,6 +13,7 @@
         }
     </style>
 </head>
+
 <body>
     <button id="easy">Easy</button>
     <button id="normal">Normal</button>
@@ -21,7 +23,6 @@
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
-
         const ROWS = 6;
         const COLS = 7;
         const CELL_SIZE = 100;
@@ -110,14 +111,14 @@
                     }
                 }
             } else if (difficulty === 'impossible') {
-                const {bestCol} = alphaBeta(2, 0, -Infinity, Infinity);
+                const { bestCol } = alphaBeta(2, 0, -Infinity, Infinity);
                 col = bestCol;
             }
 
             for (let row = ROWS - 1; row >= 0; row--) {
                 if (board[row][col] === 0) {
                     board[row][col] = currentPlayer;
-                    return {row, col};
+                    return { row, col };
                 }
             }
 
@@ -153,7 +154,7 @@
                                 bestValue = player === 2 ? 1 : -1;
                                 bestCol = col;
                             } else {
-                                const {bestValue: childBestValue} = alphaBeta(3 - player, depth - 1, alpha, beta);
+                                const { bestValue: childBestValue } = alphaBeta(3 - player, depth - 1, alpha, beta);
                                 if (player === 2) {
                                     if (childBestValue > bestValue) {
                                         bestValue = childBestValue;
@@ -179,7 +180,7 @@
                     }
                 }
             }
-            return {bestValue, bestCol};
+            return { bestValue, bestCol };
         }
 
         function findBestMove(player, targetPlayer) {
@@ -248,4 +249,5 @@
         canvas.addEventListener('click', handleClick);
     </script>
 </body>
+
 </html>

@@ -1,118 +1,169 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pong Game</title>
-  <style>
-    canvas {
-      display: block;
-      margin: auto;
-      background-color: black;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pong Game</title>
+    <style>
+        canvas {
+            display: block;
+            margin: auto;
+            background-color: black;
+        }
+    </style>
 </head>
+
 <body>
-  <canvas id="gameCanvas" width="800" height="400"></canvas>
-  <script>
-    const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d');
+    <button id="easy">Easy</button>
+    <button id="normal">Normal</button>
+    <button id="hard">Hard</button>
+    <canvas id="gameCanvas" width="800" height="400"></canvas>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
 
-    const paddleHeight = 100;
-    const paddleWidth = 10;
-    const ballSize = 10;
-    let leftPaddleY = (canvas.height - paddleHeight) / 2;
-    let rightPaddleY = (canvas.height - paddleHeight) / 2;
-    let ballX = canvas.width / 2;
-    let ballY = canvas.height / 2;
-    let ballSpeedX = 5;
-    let ballSpeedY = 3;
+        const paddleHeight = 100;
+        const paddleWidth = 10;
+        const ballSize = 10;
+        let leftPaddleY = (canvas.height - paddleHeight) / 2;
+        let rightPaddleY = (canvas.height - paddleHeight) / 2;
+        let ballX = canvas.width / 2;
+        let ballY = canvas.height / 2;
+        let ballSpeedX = 5;
+        let ballSpeedY = 3;
 
-    let leftPaddleSpeed = 0;
-    const paddleSpeed = 6;
+        let leftPaddleSpeed = 0;
+        const paddleSpeed = 6;
 
-    function drawPaddle(x, y) {
-      ctx.fillStyle = 'white';
-      ctx.fillRect(x, y, paddleWidth, paddleHeight);
-    }
+        let difficulty = 'normal';
+        let aiPaddleSpeed = 3;
+        let aiReactionTime = 0.2;
 
-    function drawBall(x, y) {
-      ctx.fillStyle = 'white';
-      ctx.fillRect(x, y, ballSize, ballSize);
-    }
+        function drawPaddle(x, y) {
+            ctx.fillStyle = 'white';
+            ctx.fillRect(x, y, paddleWidth, paddleHeight);
+        }
 
-    function update() {
-      ballX += ballSpeedX;
-      ballY += ballSpeedY;
+        function drawBall(x, y) {
+            ctx.fillStyle = 'white';
+            ctx.fillRect(x, y, ballSize, ballSize);
+        }
 
-      // Move the left paddle based on user input
-      leftPaddleY += leftPaddleSpeed;
+        function update() {
+            ballX += ballSpeedX;
+            ballY += ballSpeedY;
 
-      // Keep the left paddle within the canvas bounds
-      if (leftPaddleY < 0) {
-        leftPaddleY = 0;
-      } else if (leftPaddleY > canvas.height - paddleHeight) {
-        leftPaddleY = canvas.height - paddleHeight;
-      }
+            // Move the left paddle based on user input
+            leftPaddleY += leftPaddleSpeed;
 
-      // Bounce off the top and bottom walls
-      if (ballY <= 0 || ballY >= canvas.height - ballSize) {
-        ballSpeedY = -ballSpeedY;
-      }
+            // Keep the left paddle within the canvas bounds
+            if (leftPaddleY < 0) {
+                leftPaddleY = 0;
+            } else if (leftPaddleY > canvas.height - paddleHeight) {
+                leftPaddleY = canvas.height - paddleHeight;
+            }
 
-      // Bounce off the paddles
-      if ((ballX <= paddleWidth && ballY > leftPaddleY && ballY < leftPaddleY + paddleHeight) ||
-          (ballX >= canvas.width - paddleWidth - ballSize && ballY > rightPaddleY && ballY < rightPaddleY + paddleHeight)) {
-        ballSpeedX = -ballSpeedX;
-      }
+            // Bounce off the top and bottom walls
+            if (ballY <= 0 || ballY >= canvas.height - ballSize) {
+                ballSpeedY = -ballSpeedY;
+            }
 
-      // Right paddle AI
-      if (rightPaddleY + paddleHeight / 2 < ballY - 35) {
-        rightPaddleY += 6;
-      } else if (rightPaddleY + paddleHeight / 2 > ballY + 35) {
-        rightPaddleY -= 6;
-      }
+            // Bounce off the paddles
+            if ((ballX <= paddleWidth && ballY > leftPaddleY && ballY < leftPaddleY + paddleHeight) ||
+                (ballX >= canvas.width - paddleWidth - ballSize && ballY > rightPaddleY && ballY < rightPaddleY + paddleHeight)) {
+                ballSpeedX = -ballSpeedX;
+            }
 
-      // Check for out-of-bounds, reset ball
-      if (ballX <= 0 || ballX >= canvas.width - ballSize) {
-        ballX = canvas.width / 2;
-        ballY = canvas.height / 2;
-        ballSpeedX = -ballSpeedX;
-      }
-    }
+            // Right paddle AI
+            if (rightPaddleY + paddleHeight / 2 < ballY - 35) {
+                rightPaddleY += 6;
+            } else if (rightPaddleY + paddleHeight / 2 > ballY + 35) {
+                rightPaddleY -= 6;
+            }
 
-    function draw() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+            // Check for out-of-bounds, reset ball
+            if (ballX <= 0 || ballX >= canvas.width - ballSize) {
+                ballX = canvas.width / 2;
+                ballY = canvas.height / 2;
+                ballSpeedX = -ballSpeedX;
+            }
+        }
 
-      drawPaddle(0, leftPaddleY);
-      drawPaddle(canvas.width - paddleWidth, rightPaddleY);
-      drawBall(ballX, ballY);
-    }
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    function gameLoop() {
-      update();
-      draw();
-      requestAnimationFrame(gameLoop);
-    }
+            drawPaddle(0, leftPaddleY);
+            drawPaddle(canvas.width - paddleWidth, rightPaddleY);
+            drawBall(ballX, ballY);
+        }
 
-    function keyDownHandler(e) {
-      if (e.key === 'ArrowUp') {
-        leftPaddleSpeed = -paddleSpeed;
-      } else if (e.key === 'ArrowDown') {
-        leftPaddleSpeed = paddleSpeed;
-      }
-    }
+        function gameLoop() {
+            aiPaddle();
+            update();
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
 
-    function keyUpHandler(e) {
-      if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
-        leftPaddleSpeed = 0;
-      }
-    }
+        function keyDownHandler(e) {
+            if (e.key === 'ArrowUp') {
+                leftPaddleSpeed = -paddleSpeed;
+            } else if (e.key === 'ArrowDown') {
+                leftPaddleSpeed = paddleSpeed;
+            }
+        }
 
-    document.addEventListener('keydown', keyDownHandler);
-    document.addEventListener('keyup', keyUpHandler);
+        function keyUpHandler(e) {
+            if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+                leftPaddleSpeed = 0;
+            }
+        }
 
-    gameLoop();
-  </script>
+        function setDifficulty(newDifficulty) {
+            difficulty = newDifficulty;
+
+            switch (difficulty) {
+                case 'easy':
+                    aiPaddleSpeed = 2;
+                    aiReactionTime = 0.4;
+                    break;
+                case 'normal':
+                    aiPaddleSpeed = 3;
+                    aiReactionTime = 0.2;
+                    break;
+                case 'hard':
+                    aiPaddleSpeed = 4;
+                    aiReactionTime = 0.1;
+                    break;
+            }
+        }
+
+        function aiPaddle() {
+            const targetY = ballY - (paddleHeight - ballSize) / 2;
+
+            if (Math.random() < aiReactionTime) {
+                if (targetY < rightPaddleY) {
+                    rightPaddleY -= aiPaddleSpeed;
+                } else if (targetY > rightPaddleY + paddleHeight) {
+                    rightPaddleY += aiPaddleSpeed;
+                }
+            }
+
+            if (rightPaddleY < 0) {
+                rightPaddleY = 0;
+            } else if (rightPaddleY + paddleHeight > canvas.height) {
+                rightPaddleY = canvas.height - paddleHeight;
+            }
+        }
+
+        document.getElementById('easy').addEventListener('click', () => setDifficulty('easy'));
+        document.getElementById('normal').addEventListener('click', () => setDifficulty('normal'));
+        document.getElementById('hard').addEventListener('click', () => setDifficulty('hard'));
+        document.addEventListener('keydown', keyDownHandler);
+        document.addEventListener('keyup', keyUpHandler);
+
+        gameLoop();
+    </script>
 </body>
+
 </html>
