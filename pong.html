@@ -28,6 +28,9 @@
     let ballSpeedX = 5;
     let ballSpeedY = 3;
 
+    let leftPaddleSpeed = 0;
+    const paddleSpeed = 6;
+
     function drawPaddle(x, y) {
       ctx.fillStyle = 'white';
       ctx.fillRect(x, y, paddleWidth, paddleHeight);
@@ -42,6 +45,16 @@
       ballX += ballSpeedX;
       ballY += ballSpeedY;
 
+      // Move the left paddle based on user input
+      leftPaddleY += leftPaddleSpeed;
+
+      // Keep the left paddle within the canvas bounds
+      if (leftPaddleY < 0) {
+        leftPaddleY = 0;
+      } else if (leftPaddleY > canvas.height - paddleHeight) {
+        leftPaddleY = canvas.height - paddleHeight;
+      }
+
       // Bounce off the top and bottom walls
       if (ballY <= 0 || ballY >= canvas.height - ballSize) {
         ballSpeedY = -ballSpeedY;
@@ -51,13 +64,6 @@
       if ((ballX <= paddleWidth && ballY > leftPaddleY && ballY < leftPaddleY + paddleHeight) ||
           (ballX >= canvas.width - paddleWidth - ballSize && ballY > rightPaddleY && ballY < rightPaddleY + paddleHeight)) {
         ballSpeedX = -ballSpeedX;
-      }
-
-      // Left paddle AI
-      if (leftPaddleY + paddleHeight / 2 < ballY - 35) {
-        leftPaddleY += 6;
-      } else if (leftPaddleY + paddleHeight / 2 > ballY + 35) {
-        leftPaddleY -= 6;
       }
 
       // Right paddle AI
@@ -88,6 +94,23 @@
       draw();
       requestAnimationFrame(gameLoop);
     }
+
+    function keyDownHandler(e) {
+      if (e.key === 'ArrowUp') {
+        leftPaddleSpeed = -paddleSpeed;
+      } else if (e.key === 'ArrowDown') {
+        leftPaddleSpeed = paddleSpeed;
+      }
+    }
+
+    function keyUpHandler(e) {
+      if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+        leftPaddleSpeed = 0;
+      }
+    }
+
+    document.addEventListener('keydown', keyDownHandler);
+    document.addEventListener('keyup', keyUpHandler);
 
     gameLoop();
   </script>
