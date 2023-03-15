@@ -118,9 +118,7 @@
 
             // Check for out-of-bounds, reset ball
             if (ballX <= 0 || ballX >= canvas.width - ballSize) {
-                ballX = canvas.width / 2;
-                ballY = canvas.height / 2;
-                ballSpeedX = -ballSpeedX;
+                resetBall();
             }
         }
 
@@ -217,6 +215,21 @@
                 player2Score++;
             }
             updateScore();
+        }
+
+        function resetBall() {
+            if (ball.x < 0) {
+                player2Score++; // Player 2 scores a point
+                updateScore();
+            } else if (ball.x > canvas.width) {
+                player1Score++; // Player 1 scores a point
+                updateScore();
+            }
+
+            ball.x = canvas.width / 2;
+            ball.y = canvas.height / 2;
+            ball.vx = -ball.vx;
+            ball.vy = Math.random() * 4 - 2;
         }
 
         // Update the difficulty button event listeners to reset scores when changing difficulty
