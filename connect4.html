@@ -111,7 +111,7 @@
                     }
                 }
             } else if (difficulty === 'impossible') {
-                const { bestCol } = alphaBeta(2, 0, -Infinity, Infinity);
+                const { bestCol } = alphaBeta(2, 5, -Infinity, Infinity);
                 col = bestCol;
             }
 
@@ -129,21 +129,8 @@
             let bestValue;
             let bestCol = -1;
 
-            if (depth === 0) {
-                bestValue = -1;
-                for (let col = 0; col < COLS; col++) {
-                    for (let row = ROWS - 1; row >= 0; row--) {
-                        if (board[row][col] === 0) {
-                            board[row][col] = player;
-                            if (checkWin(row, col)) {
-                                bestValue = 1;
-                                bestCol = col;
-                            }
-                            board[row][col] = 0;
-                            break;
-                        }
-                    }
-                }
+            if (depth === 0 || isFull()) {
+                bestValue = 0;
             } else {
                 bestValue = player === 2 ? -Infinity : Infinity;
                 for (let col = 0; col < COLS; col++) {
@@ -183,6 +170,17 @@
             return { bestValue, bestCol };
         }
 
+        function isFull() {
+            for (let row = 0; row < ROWS; row++) {
+                for (let col = 0; col < COLS; col++) {
+                    if (board[row][col] === 0) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
         function findBestMove(player, targetPlayer) {
             for (let col = 0; col < COLS; col++) {
                 for (let row = ROWS - 1; row >= 0; row--) {
@@ -210,25 +208,37 @@
             for (let row = ROWS - 1; row >= 0; row--) {
                 if (board[row][col] === 0) {
                     board[row][col] = currentPlayer;
+                    const isPlayerWin = checkWin(row, col);
 
-                    if (checkWin(row, col)) {
-                        alert(`Player ${currentPlayer} wins!`);
-                        createBoard();
+                    if (isPlayerWin || isFull()) {
+                        setTimeout(() => {
+                            if (isPlayerWin) {
+                                alert('Player 1 wins!');
+                            } else {
+                                alert('Draw!');
+                            }
+                            createBoard();
+                            drawBoard();
+                        }, 100);
                     } else {
                         currentPlayer = 3 - currentPlayer;
+                        const aiMoveResult = aiMove();
+                        const isAIWin = checkWin(aiMoveResult.row, aiMoveResult.col);
 
-                        if (currentPlayer === 2) {
-                            const aiMoveResult = aiMove();
-
-                            if (aiMoveResult && checkWin(aiMoveResult.row, aiMoveResult.col)) {
-                                alert(`Player ${currentPlayer} wins!`);
+                        if (isAIWin || isFull()) {
+                            setTimeout(() => {
+                                if (isAIWin) {
+                                    alert('Player 2 (AI) wins!');
+                                } else {
+                                    alert('Draw!');
+                                }
                                 createBoard();
-                            }
-
-                            currentPlayer = 3 - currentPlayer;
+                                drawBoard();
+                            }, 100);
                         }
                     }
 
+                    currentPlayer = 3 - currentPlayer;
                     drawBoard();
                     break;
                 }
