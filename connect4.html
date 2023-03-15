@@ -32,6 +32,19 @@
             padding: 10px;
             display: inline-block;
         }
+
+        .scoreboard {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .score {
+            font-family: Arial, sans-serif;
+            font-size: 24px;
+            color: #333;
+            margin: 0 20px;
+        }
     </style>
 </head>
 
@@ -41,6 +54,10 @@
     <button id="normal">Normal</button>
     <button id="hard">Hard</button>
     <div class="difficulty-label">Difficulty: easy</div>
+    <div class="scoreboard">
+        <div class="score" id="player1Score">Player 1: 0</div>
+        <div class="score" id="player2Score">Player 2: 0</div>
+    </div>
     <canvas id="gameCanvas" width="700" height="600"></canvas>
     <script>
         const canvas = document.getElementById('gameCanvas');
@@ -53,6 +70,9 @@
         const board = [];
         let currentPlayer = 1;
         let difficulty = 'easy';
+
+        let player1Score = 0;
+        let player2Score = 0;
 
         function createBoard() {
             for (let row = 0; row < ROWS; row++) {
@@ -235,6 +255,7 @@
                     if (isPlayerWin || isFull()) {
                         setTimeout(() => {
                             if (isPlayerWin) {
+                                incrementScore(currentPlayer);
                                 alert('Player 1 wins!');
                             } else {
                                 alert('Draw!');
@@ -250,6 +271,7 @@
                         if (isAIWin || isFull()) {
                             setTimeout(() => {
                                 if (isAIWin) {
+                                    incrementScore(currentPlayer);
                                     alert('Player 2 (AI) wins!');
                                 } else {
                                     alert('Draw!');
@@ -272,9 +294,39 @@
             difficultyLabel.textContent = `Difficulty: ${difficulty}`;
         }
 
-        document.getElementById('easy').addEventListener('click', () => setDifficulty('easy'));
-        document.getElementById('normal').addEventListener('click', () => setDifficulty('normal'));
-        document.getElementById('hard').addEventListener('click', () => setDifficulty('hard'));
+        function updateScore() {
+            document.getElementById('player1Score').textContent = `Player 1: ${player1Score}`;
+            document.getElementById('player2Score').textContent = `Player 2: ${player2Score}`;
+        }
+
+        function resetScores() {
+            player1Score = 0;
+            player2Score = 0;
+            updateScore();
+        }
+
+        function incrementScore(player) {
+            if (player === 1) {
+                player1Score++;
+            } else if (player === 2) {
+                player2Score++;
+            }
+            updateScore();
+        }
+
+        // Update the difficulty button event listeners to reset scores when changing difficulty
+        document.getElementById('easy').addEventListener('click', () => {
+            setDifficulty('easy');
+            resetScores();
+        });
+        document.getElementById('normal').addEventListener('click', () => {
+            setDifficulty('normal');
+            resetScores();
+        });
+        document.getElementById('hard').addEventListener('click', () => {
+            setDifficulty('hard');
+            resetScores();
+        });
 
         createBoard();
         drawBoard();
