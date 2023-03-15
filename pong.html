@@ -92,7 +92,7 @@
 
         function draw() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-
+            drawTitle();
             drawPaddle(0, leftPaddleY);
             drawPaddle(canvas.width - paddleWidth, rightPaddleY);
             drawBall(ballX, ballY);
@@ -154,6 +154,14 @@
             } else if (rightPaddleY + paddleHeight > canvas.height) {
                 rightPaddleY = canvas.height - paddleHeight;
             }
+        }
+
+        function drawTitle() {
+            ctx.font = '48px Arial';
+            ctx.fillStyle = 'white';
+            ctx.textAlign = 'center';
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillText('Pong', canvas.width / 2, 50);
         }
 
         document.getElementById('easy').addEventListener('click', () => setDifficulty('easy'));
