@@ -16,6 +16,7 @@
     <button id="easy">Easy</button>
     <button id="normal">Normal</button>
     <button id="hard">Hard</button>
+    <button id="impossible">Impossible</button>
     <canvas id="gameCanvas" width="700" height="600"></canvas>
     <script>
         const canvas = document.getElementById('gameCanvas');
@@ -87,7 +88,6 @@
                 startRow--;
                 startCol++;
             }
-
             return false;
         }
 
@@ -97,18 +97,21 @@
             if (difficulty === 'easy') {
                 col = Math.floor(Math.random() * COLS);
             } else if (difficulty === 'normal') {
-                col = findBestMove(2, 1); // Find a move to block the opponent
+                col = findBestMove(2, 1);
                 if (col === -1) {
-                    col = Math.floor(Math.random() * COLS); // Fallback to random move if no blocking move found
+                    col = Math.floor(Math.random() * COLS);
                 }
             } else if (difficulty === 'hard') {
-                col = findBestMove(2, 2); // Find a winning move for the AI
+                col = findBestMove(2, 2);
                 if (col === -1) {
-                    col = findBestMove(2, 1); // Find a move to block the opponent
+                    col = findBestMove(2, 1);
                     if (col === -1) {
-                        col = Math.floor(Math.random() * COLS); // Fallback to random move if no other move found
+                        col = Math.floor(Math.random() * COLS);
                     }
                 }
+            } else if (difficulty === 'impossible') {
+                const {bestCol} = alphaBeta(2, 0, -Infinity, Infinity);
+                col = bestCol;
             }
 
             for (let row = ROWS - 1; row >= 0; row--) {
@@ -119,6 +122,63 @@
             }
 
             return null;
+        }
+
+        function alphaBeta(player, depth, alpha, beta) {
+            let bestValue;
+            let bestCol = -1;
+
+            if (depth === 0) {
+                bestValue = -1;
+                for (let col = 0; col < COLS; col++) {
+                    for (let row = ROWS - 1; row >= 0; row--) {
+                        if (board[row][col] === 0) {
+                            board[row][col] = player;
+                            if (checkWin(row, col)) {
+                                bestValue = 1;
+                                bestCol = col;
+                            }
+                            board[row][col] = 0;
+                            break;
+                        }
+                    }
+                }
+            } else {
+                bestValue = player === 2 ? -Infinity : Infinity;
+                for (let col = 0; col < COLS; col++) {
+                    for (let row = ROWS - 1; row >= 0; row--) {
+                        if (board[row][col] === 0) {
+                            board[row][col] = player;
+                            if (checkWin(row, col)) {
+                                bestValue = player === 2 ? 1 : -1;
+                                bestCol = col;
+                            } else {
+                                const {bestValue: childBestValue} = alphaBeta(3 - player, depth - 1, alpha, beta);
+                                if (player === 2) {
+                                    if (childBestValue > bestValue) {
+                                        bestValue = childBestValue;
+                                        bestCol = col;
+                                    }
+                                    alpha = Math.max(alpha, bestValue);
+                                } else {
+                                    if (childBestValue < bestValue) {
+                                        bestValue = childBestValue;
+                                        bestCol = col;
+                                    }
+                                    beta = Math.min(beta, bestValue);
+                                }
+                            }
+                            board[row][col] = 0;
+                            if (beta <= alpha) {
+                                break;
+                            }
+                    }
+                    if (beta <= alpha) {
+                        break;
+                    }
+                }
+            }
+            return {bestValue, bestCol};
         }
 
         function findBestMove(player, targetPlayer) {
@@ -137,7 +197,6 @@
             }
             return -1;
         }
-
 
         function handleClick(e) {
             if (currentPlayer === 2) return;
@@ -181,6 +240,7 @@
         document.getElementById('easy').addEventListener('click', () => setDifficulty('easy'));
         document.getElementById('normal').addEventListener('click', () => setDifficulty('normal'));
         document.getElementById('hard').addEventListener('click', () => setDifficulty('hard'));
+        document.getElementById('impossible').addEventListener('click', () => setDifficulty('impossible'));
 
         createBoard();
         drawBoard();
