@@ -97,11 +97,18 @@
             if (difficulty === 'easy') {
                 col = Math.floor(Math.random() * COLS);
             } else if (difficulty === 'normal') {
-                // Add more logic for normal difficulty
-                col = Math.floor(Math.random() * COLS);
+                col = findBestMove(2, 1); // Find a move to block the opponent
+                if (col === -1) {
+                    col = Math.floor(Math.random() * COLS); // Fallback to random move if no blocking move found
+                }
             } else if (difficulty === 'hard') {
-                // Add more advanced AI logic for hard difficulty
-                col = Math.floor(Math.random() * COLS);
+                col = findBestMove(2, 2); // Find a winning move for the AI
+                if (col === -1) {
+                    col = findBestMove(2, 1); // Find a move to block the opponent
+                    if (col === -1) {
+                        col = Math.floor(Math.random() * COLS); // Fallback to random move if no other move found
+                    }
+                }
             }
 
             for (let row = ROWS - 1; row >= 0; row--) {
@@ -113,6 +120,24 @@
 
             return null;
         }
+
+        function findBestMove(player, targetPlayer) {
+            for (let col = 0; col < COLS; col++) {
+                for (let row = ROWS - 1; row >= 0; row--) {
+                    if (board[row][col] === 0) {
+                        board[row][col] = targetPlayer;
+                        if (checkWin(row, col)) {
+                            board[row][col] = 0;
+                            return col;
+                        }
+                        board[row][col] = 0;
+                        break;
+                    }
+                }
+            }
+            return -1;
+        }
+
 
         function handleClick(e) {
             if (currentPlayer === 2) return;
