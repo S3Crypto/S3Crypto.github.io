@@ -40,8 +40,7 @@
     <button id="easy">Easy</button>
     <button id="normal">Normal</button>
     <button id="hard">Hard</button>
-    <button id="impossible">Impossible</button>
-    <div class="difficulty-label">Difficulty: Easy</div>
+    <div class="difficulty-label">Difficulty: easy</div>
     <canvas id="gameCanvas" width="700" height="600"></canvas>
     <script>
         const canvas = document.getElementById('gameCanvas');
@@ -121,13 +120,11 @@
             let col;
 
             if (difficulty === 'easy') {
-                col = Math.floor(Math.random() * COLS);
-            } else if (difficulty === 'normal') {
                 col = findBestMove(2, 1);
                 if (col === -1) {
                     col = Math.floor(Math.random() * COLS);
                 }
-            } else if (difficulty === 'hard') {
+            } else if (difficulty === 'normal') {
                 col = findBestMove(2, 2);
                 if (col === -1) {
                     col = findBestMove(2, 1);
@@ -135,7 +132,7 @@
                         col = Math.floor(Math.random() * COLS);
                     }
                 }
-            } else if (difficulty === 'impossible') {
+            } else if (difficulty === 'hard') {
                 const { bestCol } = alphaBeta(2, 5, -Infinity, Infinity);
                 col = bestCol;
             }
@@ -278,7 +275,6 @@
         document.getElementById('easy').addEventListener('click', () => setDifficulty('easy'));
         document.getElementById('normal').addEventListener('click', () => setDifficulty('normal'));
         document.getElementById('hard').addEventListener('click', () => setDifficulty('hard'));
-        document.getElementById('impossible').addEventListener('click', () => setDifficulty('impossible'));
 
         createBoard();
         drawBoard();
