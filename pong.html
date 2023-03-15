@@ -11,6 +11,18 @@
             margin: auto;
             background-color: black;
         }
+
+        .difficulty-label {
+            font-family: Arial, sans-serif;
+            font-size: 24px;
+            color: white;
+            text-align: center;
+            background-color: #4caf50;
+            border-radius: 4px;
+            margin: 20px auto;
+            padding: 10px;
+            display: inline-block;
+        }
     </style>
 </head>
 
@@ -18,9 +30,11 @@
     <button id="easy">Easy</button>
     <button id="normal">Normal</button>
     <button id="hard">Hard</button>
+    <div class="difficulty-label">Difficulty: Easy</div>
     <canvas id="gameCanvas" width="800" height="400"></canvas>
     <script>
         const canvas = document.getElementById('gameCanvas');
+        const difficultyLabel = document.querySelector(".difficulty-label");
         const ctx = canvas.getContext('2d');
 
         const paddleHeight = 100;
@@ -121,6 +135,7 @@
 
         function setDifficulty(newDifficulty) {
             difficulty = newDifficulty;
+            difficultyLabel.textContent = `Difficulty: ${difficulty}`;
 
             switch (difficulty) {
                 case 'easy':
