@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pong Game</title>
+  <style>
+    canvas {
+      display: block;
+      margin: auto;
+      background-color: black;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="gameCanvas" width="800" height="400"></canvas>
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    const paddleHeight = 100;
+    const paddleWidth = 10;
+    const ballSize = 10;
+    let leftPaddleY = (canvas.height - paddleHeight) / 2;
+    let rightPaddleY = (canvas.height - paddleHeight) / 2;
+    let ballX = canvas.width / 2;
+    let ballY = canvas.height / 2;
+    let ballSpeedX = 5;
+    let ballSpeedY = 3;
+
+    function drawPaddle(x, y) {
+      ctx.fillStyle = 'white';
+      ctx.fillRect(x, y, paddleWidth, paddleHeight);
+    }
+
+    function drawBall(x, y) {
+      ctx.fillStyle = 'white';
+      ctx.fillRect(x, y, ballSize, ballSize);
+    }
+
+    function update() {
+      ballX += ballSpeedX;
+      ballY += ballSpeedY;
+
+      // Bounce off the top and bottom walls
+      if (ballY <= 0 || ballY >= canvas.height - ballSize) {
+        ballSpeedY = -ballSpeedY;
+      }
+
+      // Bounce off the paddles
+      if ((ballX <= paddleWidth && ballY > leftPaddleY && ballY < leftPaddleY + paddleHeight) ||
+          (ballX >= canvas.width - paddleWidth - ballSize && ballY > rightPaddleY && ballY < rightPaddleY + paddleHeight)) {
+        ballSpeedX = -ballSpeedX;
+      }
+
+      // Left paddle AI
+      if (leftPaddleY + paddleHeight / 2 < ballY - 35) {
+        leftPaddleY += 6;
+      } else if (leftPaddleY + paddleHeight / 2 > ballY + 35) {
+        leftPaddleY -= 6;
+      }
+
+      // Right paddle AI
+      if (rightPaddleY + paddleHeight / 2 < ballY - 35) {
+        rightPaddleY += 6;
+      } else if (rightPaddleY + paddleHeight / 2 > ballY + 35) {
+        rightPaddleY -= 6;
+      }
+
+      // Check for out-of-bounds, reset ball
+      if (ballX <= 0 || ballX >= canvas.width - ballSize) {
+        ballX = canvas.width / 2;
+        ballY = canvas.height / 2;
+        ballSpeedX = -ballSpeedX;
+      }
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      drawPaddle(0, leftPaddleY);
+      drawPaddle(canvas.width - paddleWidth, rightPaddleY);
+      drawBall(ballX, ballY);
+    }
+
+    function gameLoop() {
+      update();
+      draw();
+      requestAnimationFrame(gameLoop);
+    }
+
+    gameLoop();
+  </script>
+</body>
+</html>
