@@ -13,6 +13,9 @@
     </style>
 </head>
 <body>
+    <button id="easy">Easy</button>
+    <button id="normal">Normal</button>
+    <button id="hard">Hard</button>
     <canvas id="gameCanvas" width="700" height="600"></canvas>
     <script>
         const canvas = document.getElementById('gameCanvas');
@@ -23,6 +26,7 @@
         const CELL_SIZE = 100;
         const board = [];
         let currentPlayer = 1;
+        let difficulty = 'easy';
 
         function createBoard() {
             for (let row = 0; row < ROWS; row++) {
@@ -87,7 +91,32 @@
             return false;
         }
 
+        function aiMove() {
+            let col;
+
+            if (difficulty === 'easy') {
+                col = Math.floor(Math.random() * COLS);
+            } else if (difficulty === 'normal') {
+                // Add more logic for normal difficulty
+                col = Math.floor(Math.random() * COLS);
+            } else if (difficulty === 'hard') {
+                // Add more advanced AI logic for hard difficulty
+                col = Math.floor(Math.random() * COLS);
+            }
+
+            for (let row = ROWS - 1; row >= 0; row--) {
+                if (board[row][col] === 0) {
+                    board[row][col] = currentPlayer;
+                    return {row, col};
+                }
+            }
+
+            return null;
+        }
+
         function handleClick(e) {
+            if (currentPlayer === 2) return;
+
             const rect = canvas.getBoundingClientRect();
             const x = e.clientX - rect.left;
             const col = Math.floor(x / CELL_SIZE);
@@ -101,6 +130,17 @@
                         createBoard();
                     } else {
                         currentPlayer = 3 - currentPlayer;
+
+                        if (currentPlayer === 2) {
+                            const aiMoveResult = aiMove();
+
+                            if (aiMoveResult && checkWin(aiMoveResult.row, aiMoveResult.col)) {
+                                alert(`Player ${currentPlayer} wins!`);
+                                createBoard();
+                            }
+
+                            currentPlayer = 3 - currentPlayer;
+                        }
                     }
 
                     drawBoard();
@@ -108,6 +148,14 @@
                 }
             }
         }
+
+        function setDifficulty(newDifficulty) {
+            difficulty = newDifficulty;
+        }
+
+        document.getElementById('easy').addEventListener('click', () => setDifficulty('easy'));
+        document.getElementById('normal').addEventListener('click', () => setDifficulty('normal'));
+        document.getElementById('hard').addEventListener('click', () => setDifficulty('hard'));
 
         createBoard();
         drawBoard();
