@@ -267,8 +267,23 @@
     const h1 = document.querySelector("h1");
     const storyIntroduction = document.getElementById("story-introduction");
     const enterButton = document.getElementById("enter-button");
+    const img = document.querySelector("img");
 
     let muted = false;
+
+    muteBtn.style.animation = "fadeIn 2s 0s forwards";
+
+    function playTextToSpeech(element) {
+      if (!muted) {
+        const utterance = new SpeechSynthesisUtterance(element.innerText);
+        synth.speak(utterance);
+      }
+    }
+
+    window.addEventListener("load", () => {
+      playTextToSpeech(h1);
+      playTextToSpeech(storyIntroduction);
+    });
 
     muteBtn.addEventListener("click", () => {
       muted = !muted;
@@ -323,6 +338,7 @@
       document.querySelector("button[type='submit']").style.animation = "fadeIn 2s 2s forwards";
       document.querySelector("button.mute-btn").style.animation = "fadeIn 2s 2s forwards";
       document.querySelector(".dialogue-box").style.animation = "fadeIn 2s 2s forwards";
+      img.style.animation = "fadeInScale 2s 9s forwards";
     });
 
     function normalizeInput(input) {
@@ -349,18 +365,24 @@
         '\\pong': 'pongAction'
       };
 
-      const action = keywords[normalizedInput];
-      if (action) {
-        performAction(action);
-      } else {
-        console.log('Unknown command. Please try again.');
+      for (const keyword in keywords) {
+        if (normalizedInput.includes(keyword)) {
+          performAction(keywords[keyword]);
+          break;
+        }
       }
     }
 
     function performAction(action) {
-      console.log(`Performing action: ${action}`);
-      // Add your custom action handling code here
+      // Implement your custom actions for each keyword here
+      console.log("Performing action:", action);
     }
+
+    userInputForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const input = textInput.value;
+      processInput(input);
+    });
   </script>
 </body>
 
