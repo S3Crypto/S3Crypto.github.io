@@ -161,6 +161,24 @@
       white-space: nowrap;
       overflow: hidden;
     }
+
+    .mute-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0;
+    }
+
+    .mute-icon,
+    .unmute-icon {
+      display: none;
+      font-size: 18px;
+    }
+
+    .mute-icon.active,
+    .unmute-icon.active {
+      display: inline;
+    }
   </style>
 </head>
 
@@ -168,7 +186,10 @@
   <div class="container">
     <h1>Welcome to Automated Future Technologies</h1>
     <img src="nft.jpeg" alt="AI Head">
-    <button class="mute-btn">Mute</button>
+    <button class="mute-btn">
+      <i class="mute-icon active">&#128263;</i>
+      <i class="unmute-icon">&#128264;</i>
+    </button>
     <div class="typewriter-label"></div>
   </div>
   <form id="UserInput">
@@ -180,8 +201,27 @@
     const userInputForm = document.getElementById("UserInput");
     const synth = window.speechSynthesis;
     const muteBtn = document.querySelector(".mute-btn");
+    const muteIcon = document.querySelector(".mute-icon");
+    const unmuteIcon = document.querySelector(".unmute-icon");
     const typewriterLabel = document.querySelector(".typewriter-label");
+
     let muted = false;
+
+    muteBtn.addEventListener("click", () => {
+      muted = !muted;
+      muteIcon.classList.toggle("active");
+      unmuteIcon.classList.toggle("active");
+      if (synth.speaking) {
+        synth.cancel();
+      }
+    });
+
+    function typewriterAnimation() {
+      typewriterLabel.style.animation = "none";
+      setTimeout(() => {
+        typewriterLabel.style.animation = `typewriter ${textInput.value.length / 10}s steps(${textInput.value.length}, end) 0s 1 normal both`;
+      }, 10);
+    }
 
     userInputForm.addEventListener("submit", (event) => {
       event.preventDefault();
@@ -190,18 +230,11 @@
         synth.speak(utterance);
       }
       typewriterLabel.textContent = "";
-      typewriterLabel.style.animation = `typewriter ${textInput.value.length / 10}s steps(${textInput.value.length}, end) 0s 1 normal both`;
+      typewriterAnimation();
       typewriterLabel.textContent = textInput.value;
       textInput.value = "";
     });
 
-    muteBtn.addEventListener("click", () => {
-      muted = !muted;
-      muteBtn.textContent = muted ? "Unmute" : "Mute";
-      if (synth.speaking) {
-        synth.cancel();
-      }
-    });
   </script>
 </body>
 
