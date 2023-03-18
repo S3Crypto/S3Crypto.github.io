@@ -34,28 +34,37 @@
       font-size: 36px;
       text-align: center;
       margin-bottom: 30px;
+      white-space: nowrap;
+      overflow: hidden;
+      opacity: 0;
+      animation: typewriter 4s steps(40, end) 1s 1 normal both;
+
     }
 
-    #story-introduction {
-      color: white;
-      font-size: 18px;
-      text-align: center;
-      margin-bottom: 30px;
+    @keyframes typewriter {
+      0% {
+        width: 0;
+        opacity: 0;
+      }
+
+      1% {
+        opacity: 1;
+      }
+
+      100% {
+        width: 100%;
+        opacity: 1;
+      }
     }
 
-    #enter-button {
-      background-color: dodgerblue;
-      color: white;
-      font-size: 24px;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      margin-bottom: 30px;
-    }
+    @keyframes fadeOut {
+      0% {
+        opacity: 1;
+      }
 
-    #enter-button:hover {
-      background-color: deepskyblue;
+      100% {
+        opacity: 0;
+      }
     }
 
     img {
@@ -67,6 +76,19 @@
       left: 50%;
       transform: translateX(-50%) translateY(100%);
       opacity: 0;
+      animation: fadeInScale 2s 7s forwards;
+    }
+
+    @keyframes fadeInScale {
+      0% {
+        transform: translate(-50%, 0%) scale(0.5);
+        opacity: 0;
+      }
+
+      100% {
+        transform: translate(-50%, 0%) scale(1);
+        opacity: 1;
+      }
     }
 
     #UserInput {
@@ -79,7 +101,6 @@
       align-items: center;
       justify-content: center;
       padding: 10px;
-      opacity: 0;
     }
 
     input[type="text"] {
@@ -90,6 +111,7 @@
       font-size: 18px;
       color: #333;
       outline: none;
+      transition: border-color 0.3s;
     }
 
     input[type="text"]:focus {
@@ -113,6 +135,23 @@
       background-color: #333;
     }
 
+    input[type="text"],
+    button[type="submit"],
+    button.mute-btn {
+      opacity: 0;
+      animation: fadeIn 2s 7s forwards;
+    }
+
+    @keyframes fadeIn {
+      0% {
+        opacity: 0;
+      }
+
+      100% {
+        opacity: 1;
+      }
+    }
+
     .dialogue-box {
       position: absolute;
       background-color: black;
@@ -124,12 +163,21 @@
       width: 400px;
       right: 0;
       bottom: 80px;
-      opacity: 0;
     }
 
     .message {
       color: white;
       margin-bottom: 5px;
+    }
+
+    .typewriter-label {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      color: white;
+      font-size: 24px;
+      white-space: nowrap;
+      overflow: hidden;
     }
 
     .mute-btn {
@@ -142,7 +190,6 @@
       font-size: 0;
       width: 40px;
       height: 40px;
-      opacity: 1;
     }
 
     .mute-icon,
@@ -155,15 +202,47 @@
     .unmute-icon.active {
       display: inline;
     }
+
+    .story-introduction {
+      color: white;
+      font-size: 20px;
+      text-align: center;
+      margin-bottom: 30px;
+      white-space: nowrap;
+      overflow: hidden;
+      opacity: 0;
+      animation: typewriter 8s steps(200, end) 5s 1 normal both;
+    }
+
+    .enter-button {
+      font-size: 24px;
+      padding: 15px 30px;
+      background-color: dodgerblue;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      opacity: 1;
+      transition: opacity 0.3s;
+    }
+
+    .enter-button:hover {
+      background-color: #1e90ff;
+    }
   </style>
 </head>
 
 <body>
   <div class="container">
-    <h1 id="title">Welcome to Automated Future Technologies</h1>
-    <p id="story-introduction">Navigate through our services by entering commands. Use '\help' for a list of available
-      commands.</p>
-    <button id="enter-button">Enter</button>
+    <h1>Welcome to Automated Future Technologies</h1>
+    <div id="story-introduction" class="story-introduction">
+      You find yourself standing in a virtual crossroads. The path forward is obscured
+      by riddles and secrets, waiting for you to unravel them. Your mission is to explore the realm and discover the
+      hidden
+      gems that lie within each keyword. With wisdom and cunning, you will unlock the mysteries and uncover the treasure
+      trove of knowledge.
+    </div>
+    <button id="enter-button" class="enter-button">Enter</button>
     <img src="nft.jpeg" alt="AI Head">
     <button class="mute-btn">
       <i class="mute-icon">&#128263;</i>
@@ -185,17 +264,26 @@
     const muteIcon = document.querySelector(".mute-icon");
     const unmuteIcon = document.querySelector(".unmute-icon");
     const messages = document.querySelector(".messages");
-    const enterButton = document.getElementById("enter-button");
-    const title = document.getElementById("title");
+    const h1 = document.querySelector("h1");
     const storyIntroduction = document.getElementById("story-introduction");
+    const enterButton = document.getElementById("enter-button");
     const img = document.querySelector("img");
-    const dialogueBox = document.querySelector(".dialogue-box");
+
     let muted = false;
 
-    function fadeIn(element) {
-      element.style.transition = "opacity 2s";
-      element.style.opacity = 1;
+    muteBtn.style.animation = "fadeIn 2s 0s forwards";
+
+    function playTextToSpeech(element) {
+      if (!muted) {
+        const utterance = new SpeechSynthesisUtterance(element.innerText);
+        synth.speak(utterance);
+      }
     }
+
+    window.addEventListener("load", () => {
+      playTextToSpeech(h1);
+      playTextToSpeech(storyIntroduction);
+    });
 
     muteBtn.addEventListener("click", () => {
       muted = !muted;
@@ -206,84 +294,95 @@
       }
     });
 
-    enterButton.addEventListener("click", () => {
-      const utterTitle = new SpeechSynthesisUtterance(title.textContent);
-      const utterIntro = new SpeechSynthesisUtterance(storyIntroduction.textContent);
+    userInputForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const utterance = new SpeechSynthesisUtterance(textInput.value);
       if (!muted) {
-        synth.speak(utterTitle);
-        synth.speak(utterIntro);
+        synth.speak(utterance);
       }
-      enterButton.style.display = "none";
-      title.style.display = "none";
-      storyIntroduction.style.display = "none";
-      fadeIn(img);
-      fadeIn(userInputForm);
-      fadeIn(dialogueBox);
+      const newMessage = document.createElement('div');
+      newMessage.className = 'message';
+      newMessage.innerText = textInput.value;
+      messages.appendChild(newMessage);
+
+      messages.scrollTop = messages.scrollHeight;
+
+      textInput.value = '';
+
+      newMessage.style.animation = 'slideUp 1s forwards, typewriter 1s steps(25, end) 1s 1 normal both';
     });
+
+    const slideUp = `
+  @keyframes slideUp {
+    0% {
+      transform: translateY(0);
+    }
+
+    100% {
+      transform: translateY(-100%);
+    }
+  }
+`;
+
+    const style = document.createElement('style');
+    style.innerHTML = slideUp;
+    document.head.appendChild(style);
+
+    enterButton.addEventListener("click", () => {
+      enterButton.style.opacity = 0;
+      enterButton.style.pointerEvents = "none";
+      h1.style.animation = "fadeOut 2s 0s forwards";
+      storyIntroduction.style.animation = "fadeOut 2s 0s forwards";
+
+      document.querySelector("input[type='text']").style.animation = "fadeIn 2s 2s forwards";
+      document.querySelector("button[type='submit']").style.animation = "fadeIn 2s 2s forwards";
+      document.querySelector("button.mute-btn").style.animation = "fadeIn 2s 2s forwards";
+      document.querySelector(".dialogue-box").style.animation = "fadeIn 2s 2s forwards";
+      img.style.animation = "fadeInScale 2s 9s forwards";
+    });
+
+    function normalizeInput(input) {
+      return input.trim().toLowerCase();
+    }
+
+    function processInput(input) {
+      const normalizedInput = normalizeInput(input);
+      const keywords = {
+        '\\cv': 'cvAction',
+        '\\explain': 'explainAction',
+        '\\help': 'helpAction',
+        '\\join': 'joinAction',
+        '\\contact': 'contactAction',
+        '\\games': 'gamesAction',
+        '\\seo': 'seoAction',
+        '\\glossary': 'glossaryAction',
+        '\\connect4': 'connect4Action',
+        '\\snake': 'snakeAction',
+        '\\solidity': 'solidityAction',
+        '\\guides': 'guidesAction',
+        '\\discord': 'discordAction',
+        '\\nft': 'nftAction',
+        '\\pong': 'pongAction'
+      };
+
+      for (const keyword in keywords) {
+        if (normalizedInput.includes(keyword)) {
+          performAction(keywords[keyword]);
+          break;
+        }
+      }
+    }
+
+    function performAction(action) {
+      // Implement your custom actions for each keyword here
+      console.log("Performing action:", action);
+    }
 
     userInputForm.addEventListener("submit", (event) => {
       event.preventDefault();
       const input = textInput.value;
       processInput(input);
     });
-
-    const keywords = {
-      '\\cv': 'cvAction',
-      '\\explain': 'explainAction',
-      '\\help': 'helpAction',
-      '\\join': 'joinAction',
-      '\\contact': 'contactAction',
-      '\\games': 'gamesAction',
-      '\\seo': 'seoAction',
-      '\\glossary': 'glossaryAction',
-      '\\connect4': 'connect4Action',
-      '\\snake': 'snakeAction',
-      '\\solidity': 'solidityAction',
-      '\\guides': 'guidesAction',
-      '\\discord': 'discordAction',
-      '\\telegram': 'telegramAction',
-      '\\twitter': 'twitterAction',
-    };
-
-    function processInput(input) {
-      const action = findAction(input);
-      if (action) {
-        executeAction(action);
-      } else {
-        displayMessage('Unknown command, please try again or type "\\help" for assistance.');
-      }
-      textInput.value = "";
-    }
-
-    function findAction(input) {
-      for (const keyword in keywords) {
-        if (input.toLowerCase().startsWith(keyword)) {
-          return keywords[keyword];
-        }
-      }
-      return null;
-    }
-
-    function executeAction(action) {
-      if (action === "helpAction") {
-        displayMessage("Available commands: " + Object.keys(keywords).join(", "));
-      } else {
-        displayMessage("Executing command: " + action);
-        // Add the functionality for the other actions here
-      }
-    }
-
-    function displayMessage(message) {
-      const messageElement = document.createElement("p");
-      messageElement.classList.add("message");
-      messageElement.textContent = message;
-      messages.appendChild(messageElement);
-      const utterMessage = new SpeechSynthesisUtterance(message);
-      if (!muted) {
-        synth.speak(utterMessage);
-      }
-      dialogueBox.scrollTop = dialogueBox.scrollHeight;
-    }
   </script>
 </body>
 
