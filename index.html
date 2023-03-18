@@ -193,13 +193,13 @@
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
       max-height: 200px;
       overflow-y: auto;
-      width: calc(70% - 400px);
-      left: 400px;
+      width: 20%;
+      /* Set the width to 20% of the screen */
+      right: 0;
+      /* Align the dialogue box to the right side */
       bottom: 80px;
       /* Adjust the position to be above the input box and submit button */
     }
-
-
 
     @media screen and (min-width: 768px) {
       .dialogue-box {
@@ -285,17 +285,24 @@
         synth.speak(utterance);
       }
       const newMessage = document.createElement("div");
-      newMessage.textContent = typewriterLabel.textContent;
       newMessage.classList.add("message");
       messages.appendChild(newMessage);
+      newMessage.style.animation = "none";
+      newMessage.offsetHeight; // Trigger a reflow to restart the animation
+      newMessage.style.animation = `slideUp 1s ease-out forwards`;
       typewriterLabel.textContent = "";
       typewriterLabel.style.animation = "none";
       typewriterLabel.offsetHeight; // Trigger a reflow to restart the animation
       typewriterLabel.style.animation = `typewriter ${textInput.value.length * 0.1}s steps(${textInput.value.length}, end) 0s 1 normal both`; // Adjust the typewriter animation speed
       typewriterLabel.textContent = textInput.value;
       textInput.value = "";
-      dialogueBox.scrollTop = dialogueBox.scrollHeight; // Scroll to the bottom of the dialogue box
+
+      setTimeout(() => {
+        newMessage.textContent = typewriterLabel.textContent;
+        dialogueBox.scrollTop = dialogueBox.scrollHeight; // Scroll to the bottom of the dialogue box
+      }, textInput.value.length * 100); // Adjust the timeout according to the typewriter animation speed
     });
+
 
 
   </script>
