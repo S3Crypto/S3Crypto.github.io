@@ -151,11 +151,31 @@
       }
     }
 
+    .dialogue-box {
+      position: absolute;
+      background-color: black;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      max-height: 200px;
+      overflow-y: auto;
+      width: 400px;
+      /* Set the width to 400px */
+      right: 0;
+      /* Align the dialogue box to the right side */
+      bottom: 80px;
+      /* Adjust the position to be above the input box and submit button */
+    }
+
+    .message {
+      color: white;
+      margin-bottom: 5px;
+    }
+
     .typewriter-label {
       position: absolute;
-      bottom: 30%;
-      width: 100%;
-      text-align: center;
+      bottom: 10px;
+      left: 10px;
       color: white;
       font-size: 24px;
       white-space: nowrap;
@@ -184,50 +204,6 @@
     .unmute-icon.active {
       display: inline;
     }
-
-    .dialogue-box {
-      position: absolute;
-      background-color: black;
-      border-radius: 10px;
-      padding: 20px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      max-height: 200px;
-      overflow-y: auto;
-      width: 400px;
-      /* Set the width to 400px */
-      right: 20px;
-      /* Add some space from the right side */
-      bottom: 80px;
-    }
-
-
-    @media screen and (min-width: 768px) {
-      .dialogue-box {
-        width: calc(100% - 400px);
-        left: 400px;
-      }
-    }
-
-    .typewriter-label {
-      white-space: pre-wrap;
-      animation-duration: 2s;
-      /* Adjust the typewriter animation duration */
-    }
-
-    .message {
-      animation: slideUp 1s ease-out;
-      color: white;
-    }
-
-    @keyframes slideUp {
-      0% {
-        transform: translateY(100%);
-      }
-
-      100% {
-        transform: translateY(0%);
-      }
-    }
   </style>
 </head>
 
@@ -241,7 +217,6 @@
     </button>
     <div class="dialogue-box">
       <div class="messages"></div>
-      <div class="typewriter-label"></div>
     </div>
   </div>
   <form id="UserInput">
@@ -255,8 +230,6 @@
     const muteBtn = document.querySelector(".mute-btn");
     const muteIcon = document.querySelector(".mute-icon");
     const unmuteIcon = document.querySelector(".unmute-icon");
-    const typewriterLabel = document.querySelector(".typewriter-label");
-    const dialogueBox = document.querySelector(".dialogue-box");
     const messages = document.querySelector(".messages");
 
     let muted = false;
@@ -270,57 +243,45 @@
       }
     });
 
-    function typewriterAnimation() {
-      typewriterLabel.style.animation = "none";
-      setTimeout(() => {
-        typewriterLabel.style.animation = `typewriter ${textInput.value.length / 10}s steps(${textInput.value.length}, end) 0s 1 normal both`;
-      }, 10);
-    }
-
-
-    function waitForAnimation(element, animationName) {
-      return new Promise((resolve) => {
-        const listener = (event) => {
-          if (event.animationName === animationName) {
-            element.removeEventListener("animationend", listener);
-            resolve();
-          }
-        };
-        element.addEventListener("animationend", listener);
-      });
-    }
-
-    userInputForm.addEventListener("submit", async (event) => {
+    userInputForm.addEventListener("submit", (event) => {
       event.preventDefault();
       const utterance = new SpeechSynthesisUtterance(textInput.value);
       if (!muted) {
         synth.speak(utterance);
       }
+      // Create a new message element and add it to the messages container
+      const newMessage = document.createElement('div');
+      newMessage.className = 'message';
+      newMessage.innerText = textInput.value;
+      messages.appendChild(newMessage);
 
-      const oldMessage = document.createElement("div");
-      oldMessage.classList.add("message");
-      oldMessage.textContent = typewriterLabel.textContent;
-      messages.appendChild(oldMessage);
-      oldMessage.style.animation = "none";
-      oldMessage.offsetHeight; // Trigger a reflow to restart the animation
-      oldMessage.style.animation = `slideUp 1s ease-out forwards`;
-      await waitForAnimation(oldMessage, "slideUp");
+      // Scroll the messages container to the bottom
+      messages.scrollTop = messages.scrollHeight;
 
-      typewriterLabel.textContent = "";
-      typewriterLabel.style.animation = "none";
-      typewriterLabel.offsetHeight; // Trigger a reflow to restart the animation
-      typewriterLabel.style.animation = `typewriter ${textInput.value.length * 0.1}s steps(${textInput.value.length}, end) 0s 1 normal both`; // Adjust the typewriter animation speed
-      typewriterLabel.textContent = textInput.value;
-      textInput.value = "";
+      // Clear the input field
+      textInput.value = '';
 
-      setTimeout(() => {
-        dialogueBox.scrollTop = dialogueBox.scrollHeight; // Scroll to the bottom of the dialogue box
-      }, textInput.value.length * 100); // Adjust the timeout according to the typewriter animation speed
+      // Run the animation to slide up old messages and type out the new message
+      newMessage.style.animation = 'slideUp 1s forwards, typewriter 1s steps(25, end) 1s 1 normal both';
     });
 
+    // Define the slideUp animation
+    const slideUp = `
+      @keyframes slideUp {
+        0% {
+          transform: translateY(0);
+        }
 
+        100% {
+          transform: translateY(-100%);
+        }
+      }
+    `;
 
-
+    // Add the slideUp animation to the page styles
+    const style = document.createElement('style');
+    style.innerHTML = slideUp;
+    document.head.appendChild(style);
   </script>
 </body>
 
