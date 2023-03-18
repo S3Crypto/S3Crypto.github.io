@@ -184,6 +184,44 @@
     .unmute-icon.active {
       display: inline;
     }
+
+    .dialogue-box {
+      position: absolute;
+      background-color: #f9f9f9;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      max-height: 200px;
+      overflow-y: auto;
+      width: 100%;
+    }
+
+    @media screen and (min-width: 768px) {
+      .dialogue-box {
+        width: calc(100% - 400px);
+        left: 400px;
+      }
+    }
+
+    .typewriter-label {
+      white-space: pre-wrap;
+      animation-duration: 2s;
+      /* Adjust the typewriter animation duration */
+    }
+
+    .message {
+      animation: slideUp 1s ease-out;
+    }
+
+    @keyframes slideUp {
+      0% {
+        transform: translateY(100%);
+      }
+
+      100% {
+        transform: translateY(0%);
+      }
+    }
   </style>
 </head>
 
@@ -195,7 +233,10 @@
       <i class="mute-icon">&#128263;</i>
       <i class="unmute-icon active">&#128264;</i>
     </button>
-    <div class="typewriter-label"></div>
+    <div class="dialogue-box">
+      <div class="messages"></div>
+      <div class="typewriter-label"></div>
+    </div>
   </div>
   <form id="UserInput">
     <input type="text" placeholder="Enter your text here" id="text-input">
@@ -209,6 +250,8 @@
     const muteIcon = document.querySelector(".mute-icon");
     const unmuteIcon = document.querySelector(".unmute-icon");
     const typewriterLabel = document.querySelector(".typewriter-label");
+    const dialogueBox = document.querySelector(".dialogue-box");
+    const messages = document.querySelector(".messages");
 
     let muted = false;
 
@@ -228,16 +271,21 @@
       }, 10);
     }
 
+
     userInputForm.addEventListener("submit", (event) => {
       event.preventDefault();
       const utterance = new SpeechSynthesisUtterance(textInput.value);
       if (!muted) {
         synth.speak(utterance);
       }
+      const newMessage = document.createElement("div");
+      newMessage.textContent = typewriterLabel.textContent;
+      newMessage.classList.add("message");
+      messages.appendChild(newMessage);
       typewriterLabel.textContent = "";
-      typewriterLabel.style.animation = 'none';
+      typewriterLabel.style.animation = "none";
       typewriterLabel.offsetHeight; // Trigger a reflow to restart the animation
-      typewriterLabel.style.animation = `typewriter ${textInput.value.length / 10}s steps(${textInput.value.length}, end) 0s 1 normal both`;
+      typewriterLabel.style.animation = `typewriter ${textInput.value.length * 0.1}s steps(${textInput.value.length}, end) 0s 1 normal both`; // Adjust the typewriter animation speed
       typewriterLabel.textContent = textInput.value;
       textInput.value = "";
     });
