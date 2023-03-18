@@ -34,47 +34,28 @@
       font-size: 36px;
       text-align: center;
       margin-bottom: 30px;
-      white-space: nowrap;
-      overflow: hidden;
-      opacity: 0;
-      animation: typewriter 4s steps(40, end) 1s 1 normal both, fadeOut 2s 7s forwards;
     }
 
-    p {
+    #story-introduction {
       color: white;
       font-size: 18px;
       text-align: center;
       margin-bottom: 30px;
-      white-space: nowrap;
-      overflow: hidden;
-      opacity: 0;
-      animation: typewriter 4s steps(40, end) 5s 1 normal both, fadeOut 2s 7s forwards;
     }
 
-    @keyframes typewriter {
-      0% {
-        width: 0;
-        opacity: 0;
-      }
-
-      1% {
-        opacity: 1;
-      }
-
-      100% {
-        width: 100%;
-        opacity: 1;
-      }
+    #enter-button {
+      background-color: dodgerblue;
+      color: white;
+      font-size: 24px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-bottom: 30px;
     }
 
-    @keyframes fadeOut {
-      0% {
-        opacity: 1;
-      }
-
-      100% {
-        opacity: 0;
-      }
+    #enter-button:hover {
+      background-color: deepskyblue;
     }
 
     img {
@@ -86,21 +67,6 @@
       left: 50%;
       transform: translateX(-50%) translateY(100%);
       opacity: 0;
-    }
-
-    #enter-button {
-      color: white;
-      background-color: dodgerblue;
-      font-size: 24px;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 10;
     }
 
     #UserInput {
@@ -124,8 +90,6 @@
       font-size: 18px;
       color: #333;
       outline: none;
-      transition: border-color 0.3s;
-      opacity: 0;
     }
 
     input[type="text"]:focus {
@@ -142,12 +106,30 @@
       color: white;
       font-size: 18px;
       cursor: pointer;
-      opacity: 0;
     }
 
     button[type="submit"]:hover,
     button.mute-btn:hover {
       background-color: #333;
+    }
+
+    .dialogue-box {
+      position: absolute;
+      background-color: black;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      max-height: 200px;
+      overflow-y: auto;
+      width: 400px;
+      right: 0;
+      bottom: 80px;
+      opacity: 0;
+    }
+
+    .message {
+      color: white;
+      margin-bottom: 5px;
     }
 
     .mute-btn {
@@ -160,6 +142,7 @@
       font-size: 0;
       width: 40px;
       height: 40px;
+      opacity: 1;
     }
 
     .mute-icon,
@@ -177,29 +160,42 @@
 
 <body>
   <div class="container">
-    <h1>Welcome to Automated Future Technologies</h1>
-    <p>Your adventure begins here. Enter the commands to navigate through our services.</p>
+    <h1 id="title">Welcome to Automated Future Technologies</h1>
+    <p id="story-introduction">Navigate through our services by entering commands. Use '\help' for a list of available
+      commands.</p>
+    <button id="enter-button">Enter</button>
     <img src="nft.jpeg" alt="AI Head">
     <button class="mute-btn">
       <i class="mute-icon">&#128263;</i>
       <i class="unmute-icon active">&#128264;</i>
     </button>
-    <form id="UserInput">
-      <input type="text" placeholder="Enter your text here" id="text-input">
-      <button type="submit">Submit</button>
-    </form>
-    <button id="enter-button">Enter</button>
+    <div class="dialogue-box">
+      <div class="messages"></div>
+    </div>
   </div>
+  <form id="UserInput">
+    <input type="text" placeholder="Enter your text here" id="text-input">
+    <button type="submit">Submit</button>
+  </form>
   <script>
     const textInput = document.getElementById("text-input");
     const userInputForm = document.getElementById("UserInput");
-    const enterButton = document.getElementById("enter-button");
     const synth = window.speechSynthesis;
     const muteBtn = document.querySelector(".mute-btn");
     const muteIcon = document.querySelector(".mute-icon");
     const unmuteIcon = document.querySelector(".unmute-icon");
+    const messages = document.querySelector(".messages");
+    const enterButton = document.getElementById("enter-button");
+    const title = document.getElementById("title");
+    const storyIntroduction = document.getElementById("story-introduction");
     const img = document.querySelector("img");
+    const dialogueBox = document.querySelector(".dialogue-box");
     let muted = false;
+
+    function fadeIn(element) {
+      element.style.transition = "opacity 2s";
+      element.style.opacity = 1;
+    }
 
     muteBtn.addEventListener("click", () => {
       muted = !muted;
@@ -210,21 +206,84 @@
       }
     });
 
-    const titleUtterance = new SpeechSynthesisUtterance(document.querySelector("h1").innerText);
-    if (!muted) {
-      synth.speak(titleUtterance);
+    enterButton.addEventListener("click", () => {
+      const utterTitle = new SpeechSynthesisUtterance(title.textContent);
+      const utterIntro = new SpeechSynthesisUtterance(storyIntroduction.textContent);
+      if (!muted) {
+        synth.speak(utterTitle);
+        synth.speak(utterIntro);
+      }
+      enterButton.style.display = "none";
+      title.style.display = "none";
+      storyIntroduction.style.display = "none";
+      fadeIn(img);
+      fadeIn(userInputForm);
+      fadeIn(dialogueBox);
+    });
+
+    userInputForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const input = textInput.value;
+      processInput(input);
+    });
+
+    const keywords = {
+      '\\cv': 'cvAction',
+      '\\explain': 'explainAction',
+      '\\help': 'helpAction',
+      '\\join': 'joinAction',
+      '\\contact': 'contactAction',
+      '\\games': 'gamesAction',
+      '\\seo': 'seoAction',
+      '\\glossary': 'glossaryAction',
+      '\\connect4': 'connect4Action',
+      '\\snake': 'snakeAction',
+      '\\solidity': 'solidityAction',
+      '\\guides': 'guidesAction',
+      '\\discord': 'discordAction',
+      '\\telegram': 'telegramAction',
+      '\\twitter': 'twitterAction',
+    };
+
+    function processInput(input) {
+      const action = findAction(input);
+      if (action) {
+        executeAction(action);
+      } else {
+        displayMessage('Unknown command, please try again or type "\\help" for assistance.');
+      }
+      textInput.value = "";
     }
 
-    enterButton.addEventListener("click", () => {
-      enterButton.style.display = "none";
-      img.style.animation = "fadeInScale 2s 1s forwards";
-      textInput.style.animation = "fadeIn 2s 3s forwards";
-      userInputForm.querySelector("button[type='submit']").style.animation = "fadeIn 2s 3s forwards";
-      muteBtn.style.animation = "fadeIn 2s 1s forwards";
-      if (synth.speaking) {
-        synth.cancel();
+    function findAction(input) {
+      for (const keyword in keywords) {
+        if (input.toLowerCase().startsWith(keyword)) {
+          return keywords[keyword];
+        }
       }
-    });
+      return null;
+    }
+
+    function executeAction(action) {
+      if (action === "helpAction") {
+        displayMessage("Available commands: " + Object.keys(keywords).join(", "));
+      } else {
+        displayMessage("Executing command: " + action);
+        // Add the functionality for the other actions here
+      }
+    }
+
+    function displayMessage(message) {
+      const messageElement = document.createElement("p");
+      messageElement.classList.add("message");
+      messageElement.textContent = message;
+      messages.appendChild(messageElement);
+      const utterMessage = new SpeechSynthesisUtterance(message);
+      if (!muted) {
+        synth.speak(utterMessage);
+      }
+      dialogueBox.scrollTop = dialogueBox.scrollHeight;
+    }
   </script>
 </body>
 
