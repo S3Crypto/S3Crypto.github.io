@@ -192,10 +192,9 @@
     <h1>Welcome to Automated Future Technologies</h1>
     <img src="nft.jpeg" alt="AI Head">
     <button class="mute-btn">
-      <i class="unmute-icon active">&#128263;</i>
-      <i class="mute-icon">&#128264;</i>
+      <i class="mute-icon">&#128263;</i>
+      <i class="unmute-icon active">&#128264;</i>
     </button>
-
     <div class="typewriter-label"></div>
   </div>
   <form id="UserInput">
@@ -236,11 +235,10 @@
         synth.speak(utterance);
       }
       typewriterLabel.textContent = "";
-      typewriterLabel.style.animation = "none";
-      setTimeout(() => {
-        typewriterLabel.style.animation = `typewriter ${textInput.value.length / 10}s steps(${textInput.value.length}, end) 0s 1 normal both`;
-        typewriterLabel.textContent = textInput.value;
-      }, 10);
+      typewriterLabel.style.animation = 'none';
+      typewriterLabel.offsetHeight; // Trigger a reflow to restart the animation
+      typewriterLabel.style.animation = `typewriter ${textInput.value.length / 10}s steps(${textInput.value.length}, end) 0s 1 normal both`;
+      typewriterLabel.textContent = textInput.value;
       textInput.value = "";
     });
 
