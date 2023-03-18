@@ -2,43 +2,13 @@
 <html>
   <head>
     <title>AutoFutureTech</title>
-    <style>
-      img {
-        width: 100%;
-        height: auto;
-      } 
-
-      input[type="text"] {
-			padding: 10px;
-			border: 2px solid #ccc;
-			border-radius: 5px;
-			font-size: 18px;
-			color: #333;
-			outline: none;
-			transition: border-color 0.3s;
-			width: 300px;
-		}
-
-		input[type="text"]:focus {
-			border-color: dodgerblue;
-		}
-
-    .output {
-			margin-top: 10px;
-			padding: 10px;
-			background-color: #f7f7f7;
-			border: 2px solid #ccc;
-			border-radius: 5px;
-			font-size: 18px;
-			color: #333;
-			width: 100%;
-			height: 100px;
-			overflow-y: auto;
-		}
-    </style>
+    <script src="exchange.js"></script>
+    <link rel="stylesheet" href="style.css">
   </head>
   <body>
-    <h1>Welcome to AutoFutureTech</h1>
+    <div class="container">
+      <h1 class="title">Welcome to AutoFutureTech</h1>
+    </div>
     <section id="nft">
       <img src="nft.jpeg">
     </section>
@@ -46,7 +16,9 @@
       <div class="output" id="text-output"></div>
     </section>
     <section id="UserInput">
-	    <input type="text" placeholder="Enter your text here">
+      <div class="container">
+        <input type="text" placeholder="Enter your text here">
+      </div>
     </section>
   </body>
 </html>
