@@ -37,8 +37,7 @@
       white-space: nowrap;
       overflow: hidden;
       opacity: 0;
-      animation: typewriter 4s steps(40, end) 1s 1 normal both;
-
+      animation: typewriter 4s steps(40, end) 1s 1 normal both, fadeOut 2s 7s forwards;
     }
 
     @keyframes typewriter {
@@ -161,8 +160,11 @@
       max-height: 200px;
       overflow-y: auto;
       width: 400px;
+      /* Set the width to 400px */
       right: 0;
+      /* Align the dialogue box to the right side */
       bottom: 80px;
+      /* Adjust the position to be above the input box and submit button */
     }
 
     .message {
@@ -202,47 +204,12 @@
     .unmute-icon.active {
       display: inline;
     }
-
-    .story-introduction {
-      color: white;
-      font-size: 20px;
-      text-align: center;
-      margin-bottom: 30px;
-      white-space: nowrap;
-      overflow: hidden;
-      opacity: 0;
-      animation: typewriter 8s steps(200, end) 5s 1 normal both;
-    }
-
-    .enter-button {
-      font-size: 24px;
-      padding: 15px 30px;
-      background-color: dodgerblue;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      opacity: 1;
-      transition: opacity 0.3s;
-    }
-
-    .enter-button:hover {
-      background-color: #1e90ff;
-    }
   </style>
 </head>
 
 <body>
   <div class="container">
     <h1>Welcome to Automated Future Technologies</h1>
-    <div id="story-introduction" class="story-introduction">
-      You find yourself standing in a virtual crossroads. The path forward is obscured
-      by riddles and secrets, waiting for you to unravel them. Your mission is to explore the realm and discover the
-      hidden
-      gems that lie within each keyword. With wisdom and cunning, you will unlock the mysteries and uncover the treasure
-      trove of knowledge.
-    </div>
-    <button id="enter-button" class="enter-button">Enter</button>
     <img src="nft.jpeg" alt="AI Head">
     <button class="mute-btn">
       <i class="mute-icon">&#128263;</i>
@@ -264,9 +231,6 @@
     const muteIcon = document.querySelector(".mute-icon");
     const unmuteIcon = document.querySelector(".unmute-icon");
     const messages = document.querySelector(".messages");
-    const h1 = document.querySelector("h1");
-    const storyIntroduction = document.getElementById("story-introduction");
-    const enterButton = document.getElementById("enter-button");
 
     let muted = false;
 
@@ -285,82 +249,39 @@
       if (!muted) {
         synth.speak(utterance);
       }
+      // Create a new message element and add it to the messages container
       const newMessage = document.createElement('div');
       newMessage.className = 'message';
       newMessage.innerText = textInput.value;
       messages.appendChild(newMessage);
 
+      // Scroll the messages container to the bottom
       messages.scrollTop = messages.scrollHeight;
 
+      // Clear the input field
       textInput.value = '';
 
+      // Run the animation to slide up old messages and type out the new message
       newMessage.style.animation = 'slideUp 1s forwards, typewriter 1s steps(25, end) 1s 1 normal both';
     });
 
+    // Define the slideUp animation
     const slideUp = `
-  @keyframes slideUp {
-    0% {
-      transform: translateY(0);
-    }
+      @keyframes slideUp {
+        0% {
+          transform: translateY(0);
+        }
 
-    100% {
-      transform: translateY(-100%);
-    }
-  }
-`;
+        100% {
+          transform: translateY(-100%);
+        }
+      }
+    `;
 
+    // Add the slideUp animation to the page styles
     const style = document.createElement('style');
     style.innerHTML = slideUp;
     document.head.appendChild(style);
-
-    enterButton.addEventListener("click", () => {
-      enterButton.style.opacity = 0;
-      enterButton.style.pointerEvents = "none";
-      h1.style.animation = "fadeOut 2s 0s forwards";
-      storyIntroduction.style.animation = "fadeOut 2s 0s forwards";
-
-      document.querySelector("input[type='text']").style.animation = "fadeIn 2s 2s forwards";
-      document.querySelector("button[type='submit']").style.animation = "fadeIn 2s 2s forwards";
-      document.querySelector("button.mute-btn").style.animation = "fadeIn 2s 2s forwards";
-      document.querySelector(".dialogue-box").style.animation = "fadeIn 2s 2s forwards";
-    });
-
-    function normalizeInput(input) {
-      return input.trim().toLowerCase();
-    }
-
-    function processInput(input) {
-      const normalizedInput = normalizeInput(input);
-      const keywords = {
-        '\\cv': 'cvAction',
-        '\\explain': 'explainAction',
-        '\\help': 'helpAction',
-        '\\join': 'joinAction',
-        '\\contact': 'contactAction',
-        '\\games': 'gamesAction',
-        '\\seo': 'seoAction',
-        '\\glossary': 'glossaryAction',
-        '\\connect4': 'connect4Action',
-        '\\snake': 'snakeAction',
-        '\\solidity': 'solidityAction',
-        '\\guides': 'guidesAction',
-        '\\discord': 'discordAction',
-        '\\nft': 'nftAction',
-        '\\pong': 'pongAction'
-      };
-
-      const action = keywords[normalizedInput];
-      if (action) {
-        performAction(action);
-      } else {
-        console.log('Unknown command. Please try again.');
-      }
-    }
-
-    function performAction(action) {
-      console.log(`Performing action: ${action}`);
-      // Add your custom action handling code here
-    }
   </script>
 </body>
 
