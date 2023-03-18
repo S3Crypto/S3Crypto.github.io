@@ -193,13 +193,13 @@
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
       max-height: 200px;
       overflow-y: auto;
-      width: 20%;
-      /* Set the width to 20% of the screen */
-      right: 0;
-      /* Align the dialogue box to the right side */
+      width: 400px;
+      /* Set the width to 400px */
+      right: 20px;
+      /* Add some space from the right side */
       bottom: 80px;
-      /* Adjust the position to be above the input box and submit button */
     }
+
 
     @media screen and (min-width: 768px) {
       .dialogue-box {
@@ -278,18 +278,34 @@
     }
 
 
-    userInputForm.addEventListener("submit", (event) => {
+    function waitForAnimation(element, animationName) {
+      return new Promise((resolve) => {
+        const listener = (event) => {
+          if (event.animationName === animationName) {
+            element.removeEventListener("animationend", listener);
+            resolve();
+          }
+        };
+        element.addEventListener("animationend", listener);
+      });
+    }
+
+    userInputForm.addEventListener("submit", async (event) => {
       event.preventDefault();
       const utterance = new SpeechSynthesisUtterance(textInput.value);
       if (!muted) {
         synth.speak(utterance);
       }
-      const newMessage = document.createElement("div");
-      newMessage.classList.add("message");
-      messages.appendChild(newMessage);
-      newMessage.style.animation = "none";
-      newMessage.offsetHeight; // Trigger a reflow to restart the animation
-      newMessage.style.animation = `slideUp 1s ease-out forwards`;
+
+      const oldMessage = document.createElement("div");
+      oldMessage.classList.add("message");
+      oldMessage.textContent = typewriterLabel.textContent;
+      messages.appendChild(oldMessage);
+      oldMessage.style.animation = "none";
+      oldMessage.offsetHeight; // Trigger a reflow to restart the animation
+      oldMessage.style.animation = `slideUp 1s ease-out forwards`;
+      await waitForAnimation(oldMessage, "slideUp");
+
       typewriterLabel.textContent = "";
       typewriterLabel.style.animation = "none";
       typewriterLabel.offsetHeight; // Trigger a reflow to restart the animation
@@ -298,10 +314,10 @@
       textInput.value = "";
 
       setTimeout(() => {
-        newMessage.textContent = typewriterLabel.textContent;
         dialogueBox.scrollTop = dialogueBox.scrollHeight; // Scroll to the bottom of the dialogue box
       }, textInput.value.length * 100); // Adjust the timeout according to the typewriter animation speed
     });
+
 
 
 
